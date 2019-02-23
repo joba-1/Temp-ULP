@@ -1,0 +1,38 @@
+menu "WLAN, URL and DELAY Configuration"
+
+    config WIFI_SSID
+        string "WiFi SSID"
+        default "myssid"
+        help
+            SSID (network name) of the network to connect to.
+
+    config WIFI_PASSWORD
+        string "WiFi Password"
+        default "mypassword"
+        help
+            WiFi password (WPA or WPA2) of the network to use.
+
+            Can be left blank if the network has no security set.
+
+    config HTTP_URL
+        string "HTTP URL"
+        default "http://localhost/esp32"
+        help
+            URL to post the data to.
+
+    config ULP_BUFFER
+        int "ULP BUFFER"
+        default 128
+        help
+            Bytes in RTC_SLOW_MEM where ULP buffers measurement results.
+
+
+    config ULP_DELAY
+        int "ULP DELAY"
+        default 100
+        help
+            Milliseconds between measurements.
+
+            Buffer and delay influence the wakeup interval (delay*buffer/4)
+
+endmenu

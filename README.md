@@ -17,6 +17,7 @@ mkdir -p "$BASE" && \
 cd "$BASE" && \
 git clone "https://github.com/joba-1/$REPO.git" && \
 cd "$REPO" && \
+make menuconfig && \
 make -j8 flash monitor ESPPORT=/dev/ttyUSB0 ESPBAUD=115200
 
 ```

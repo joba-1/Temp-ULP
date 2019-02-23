@@ -7,8 +7,8 @@ If the buffer is full, the main cores are started to process the data.
 
 #include "soc/soc_ulp.h"      // for READ_RTC_FIELD()
 #include "soc/rtc_cntl_reg.h" // for RTC_CNTL_LOW_POWER_ST_REG
-#include "soc/sens_reg.h"
-
+#include "soc/sens_reg.h"     // for TSENS SENS_SAR_MEAS_WAIT2_REG
+#include "sdkconfig.h"        // for CONFIG_ULP_BUFFER
 
 // Declare data visible to main cores
 .global entry                 // ulp start address used by main core program
@@ -28,7 +28,7 @@ offset: .long 0               // address of buffer for main core
 head:   .long 0
 tail:   .long 0
 buffer: .long 0               // circular buffer tail-head-gap
-        .skip 124             // and 31 long buffer items
+        .skip (CONFIG_ULP_BUFFER-4) // buffer items
 buffer_end:
 
 

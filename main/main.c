@@ -5,13 +5,16 @@ Load and start an ULP programm, then read data stream from ULP
 If there is no more data, go to sleep and wake up on ULP trigger
 */
 
-#include <stdio.h>         // printf(), putchar();
 #include "freertos/FreeRTOS.h"
 #include "freertos/task.h" // for task and timing
+#include "cJSON.h"
 #include "esp_sleep.h"     // esp_sleep_enable_ulp_wakeup(), esp_deep_sleep_start()
+#include "esp_log.h"       // ESP_LOG*()
+static const char TAG[] = "Temp-ULP";
+
 
 #include "ulp-util.h"      // my ulp_init(), ulp_start(), ulp_get() and .globals
-
+#include "http.h"          // my start_wifi() and post_http()
 
 uint32_t *buffer = &ulp_buffer;
 uint16_t buffer_start_ulp; // buffer start in ulp address space
@@ -38,31 +41,38 @@ void read_ulp() {
     vTaskDelay(1 / portTICK_PERIOD_MS); // wait until ulp is initialized
   buffer_end_ulp = buffer_start_ulp + (&ulp_buffer_end - &ulp_buffer);
 
+  cJSON *root, *array;
+  root = cJSON_CreateObject();
+  cJSON_AddNumberToObject(root, "version", 1);
+  cJSON_AddStringToObject(root, "name", "Temp-ULP");
+  array = cJSON_CreateArray();
+  cJSON_AddItemToObject(root, "raw", array);
   while( get(&item) ) {
-    printf("raw: %5u\n", item);
+    ESP_LOGI(TAG, "raw: %5u", item);
+    cJSON_AddItemToArray(array, cJSON_CreateNumber(item));
   }
 
-  printf("Going to sleep now.\n");
-  fflush(stdout);
+  post_http(cJSON_Print(root));
+
+  ESP_LOGI(TAG, "Going to sleep now\n");
   esp_deep_sleep_start();
 }
 
 
 void app_main()
 {
-  printf("Hello Temperature ULP!\n");
+  ESP_LOGI(TAG, "Hello Temperature ULP!");
+
+  start_wifi();
 
   if( esp_sleep_get_wakeup_cause() != ESP_SLEEP_WAKEUP_ULP ) {
-    uint32_t wakeups[] = { 100*1000 };
+    uint32_t wakeups[] = { CONFIG_ULP_DELAY*1000 };
     ulp_init(wakeups, sizeof(wakeups)/sizeof(*wakeups));
     ulp_start();
-    printf("Started ULP.\n");
+    ESP_LOGI(TAG, "Started ULP");
   }
 
   ESP_ERROR_CHECK( esp_sleep_enable_ulp_wakeup() );
 
-  // in this example the ULP simply increments a counter when it wakes up,
-  // writes the value as hex string into the ringbuffer,
-  // wakes up the main core if the buffer is full, then goes to sleep.
   xTaskCreate(read_ulp, "read_ulp", 4*configMINIMAL_STACK_SIZE, NULL, tskIDLE_PRIORITY, NULL);
 }

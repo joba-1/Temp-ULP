@@ -1,7 +1,10 @@
 # Measure ESP32 internal temperature with the ULP
 
-Measure temperature with internal sensor in ULP.
-If the data buffer is full, wake up the main cores to process the data.
+ULP wakes up in intervals to measure the temperature with internal sensor while main cores are in deep sleep.
+If the data buffer is full, the ULP wakes up the main cores to process the data.
+Main cores will connect to wifi, post data to a webserver and go to sleep again.
+WLAN, Webserver, interval and buffer size can be configured in sdkconfig (make menuconfig).
+Also, dont forget to set CONFIG_ULP_COPROC_RESERVE_MEM for the ULP program and the buffer.
 
 ## Build - Flash - Monitor
 * Prepare shell to use ESP-IDF (see my [Blink-ULP repo](https://github.com/joba-1/Blink-ULP/blob/master/README.md) for details)

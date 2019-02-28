@@ -47,10 +47,23 @@ void read_ulp() {
   cJSON_AddStringToObject(root, "name", "Temp-ULP");
   array = cJSON_CreateArray();
   cJSON_AddItemToObject(root, "raw", array);
+  uint8_t i = 0;
+  uint16_t v = 0;
   while( get(&item) ) {
-    ESP_LOGI(TAG, "raw: %5u", item);
-    cJSON_AddItemToArray(array, cJSON_CreateNumber(item));
+    v += item;
+    if( ++i == 10 ) {
+      ESP_LOGI(TAG, "raw: %5u", v);
+      cJSON_AddItemToArray(array, cJSON_CreateNumber(v));
+      i = 0;
+      v = 0;
+    }
   }
+  if( i > 0 ) {
+    v = v * 10 / i;
+    ESP_LOGI(TAG, "raw: %5u (%u)", v, i);
+    cJSON_AddItemToArray(array, cJSON_CreateNumber(v));
+  }
+  cJSON_AddNumberToObject(root, "remaining", i);
 
   post_http(cJSON_Print(root));
 

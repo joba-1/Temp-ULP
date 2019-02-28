@@ -27,4 +27,12 @@ make -j8 flash monitor ESPPORT=/dev/ttyUSB0 ESPBAUD=115200
 
 Exit the monitor with [Ctrl]-] (which is [Strg]-[Alt-Gr]-] on german keyboard)
 
+## Example data
+
+testing a MH-ET live mini kit with a wemos 18650 (3000mAh) adapter
+
+* Waking up every 5s runs for 8h, drawing 375mA on average
+* Waking up every 5min runs for 42h, drawing 70mA on average
+* Waking up every 5h runs for ?h, drawing ?mA on average (ongoing)
+
 JoBa1

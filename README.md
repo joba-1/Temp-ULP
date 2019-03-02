@@ -29,10 +29,18 @@ Exit the monitor with [Ctrl]-] (which is [Strg]-[Alt-Gr]-] on german keyboard)
 
 ## Example data
 
-testing a MH-ET live mini kit with a wemos 18650 (3000mAh) adapter
+Testing a MH-ET live mini kit board with a wemos 18650 (3000mAh) adapter.
+The listing contains the wake up interval sending buffered measurements, 
+the total runtime and the average current draw.
 
-* Waking up every 5s runs for 8h, drawing 375mA on average
-* Waking up every 5min runs for 42h, drawing 70mA on average
-* Waking up every 5h runs for ?h, drawing ?mA on average (ongoing)
+Interval | Working [h] | Draw [mA]
+:---:|:---:|:---:
+5s   |   8 | 375
+5min |  42 |  70
+5h   |  50 |  60
+
+The actual current draw was a bit lower since the battery capacity was not the advertised 3000mAh for sure. 
+But anyways, this board and battery adapter draw a lot of current while the ESP32 is in deepsleep drawing <10µA.
+So better search for another ESP32 setup for your low power applications (and tell me about it, please). 
 
 JoBa1
